@@ -46,21 +46,34 @@
     "settings.editor.selected.configurable": "build.tools"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.TestGuitarString">
     <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+      <method v="2" />
+    </configuration>
+    <configuration name="gh2.GuitarHeroLite" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="gh2.GuitarHeroLite" />
+      <module name="proj1" />
+      <method v="2" />
     </configuration>
     <configuration name="LinkedListDequeTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="proj1" />
       <option name="PACKAGE_NAME" value="deque" />
       <option name="MAIN_CLASS_NAME" value="deque.LinkedListDequeTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestGuitarString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="proj1" />
+      <option name="PACKAGE_NAME" value="gh2" />
+      <option name="MAIN_CLASS_NAME" value="gh2.TestGuitarString" />
       <option name="TEST_OBJECT" value="class" />
       <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
       <method v="2">
@@ -76,6 +89,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.TestGuitarString" />
         <item itemvalue="JUnit.LinkedListDequeTest" />
       </list>
     </recent_temporary>
