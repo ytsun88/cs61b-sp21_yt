@@ -36,14 +36,18 @@ public class LinkedListDeque<T> implements Deque<T> {
         lastNode.next = sentinel.prev;
         size += 1;
     }
-
+    
+    /*
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
-
+     */
+    
     public int size() {
         return size;
     }
+
 
     public void printDeque() {
         Node p = sentinel.next;
