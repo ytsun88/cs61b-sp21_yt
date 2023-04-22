@@ -150,28 +150,4 @@ public class ArrayDeque<T> implements Deque<T> {
             System.out.println(items[end]);
         }
     }
-
-    /*
-    public static void main(String[] args) {
-        ArrayDeque<Integer> arrList = new ArrayDeque<>();
-        arrList.addFirst(10);
-        arrList.addFirst(20);
-        arrList.addFirst(30);
-        arrList.addFirst(40);
-        arrList.addFirst(50);
-        arrList.addFirst(60);
-        arrList.addFirst(70);
-        arrList.addFirst(80);
-        arrList.addFirst(90);
-        arrList.printDeque();
-        arrList.removeFirst();
-        arrList.removeFirst();
-        arrList.removeFirst();
-        arrList.removeFirst();
-        arrList.removeFirst();
-        arrList.removeFirst();
-        arrList.removeFirst();
-        arrList.printDeque();
-    }
-    */
 }

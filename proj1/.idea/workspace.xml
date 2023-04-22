@@ -55,8 +55,18 @@
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
+    <configuration name="deque.LinkedListDeque" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="deque.LinkedListDeque" />
+      <module name="proj1" />
+      <method v="2" />
+    </configuration>
     <configuration name="gh2.GuitarHeroLite" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="gh2.GuitarHeroLite" />
+      <module name="proj1" />
+      <method v="2" />
+    </configuration>
+    <configuration name="gh2.TTFAF" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="gh2.TTFAF" />
       <module name="proj1" />
       <method v="2" />
     </configuration>
