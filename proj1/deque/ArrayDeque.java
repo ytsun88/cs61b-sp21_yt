@@ -1,6 +1,8 @@
 package deque;
 
-public class ArrayDeque<T> implements Deque<T> {
+import java.util.Iterator;
+
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     T[] items;
     int nextFirst;
     int nextLast;
@@ -120,6 +122,51 @@ public class ArrayDeque<T> implements Deque<T> {
         return size;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ArrayDeque)) {
+            return false;
+        }
+        ArrayDeque<?> ad = (ArrayDeque<?>) o;
+        if (ad.size() != size) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (ad.get(i) != get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int index;
+
+        ArrayDequeIterator() {
+            index = 0;
+        }
+
+        public boolean hasNext() {
+            return index < size;
+        }
+
+        public T next() {
+            T item = get(index);
+            index += 1;
+            return item;
+        }
+    }
+
     /*
     @Override
     public boolean isEmpty() {
@@ -149,19 +196,5 @@ public class ArrayDeque<T> implements Deque<T> {
             }
             System.out.println(items[end]);
         }
-    }
-
-    public static void main(String[] args) {
-        ArrayDeque<Integer> ad = new ArrayDeque<>();
-        ad.addFirst(10);
-        ad.addFirst(20);
-        ad.addFirst(30);
-        ad.addLast(40);
-        ad.addLast(50);
-        ad.printDeque();
-        ad.removeLast();
-        ad.removeLast();
-        ad.removeLast();
-        ad.printDeque();
     }
 }
