@@ -1,6 +1,6 @@
 package deque;
 
-public class ArrayDeque<T> {
+public class ArrayDeque<T> implements Deque<T> {
     T[] items;
     int nextFirst;
     int nextLast;
@@ -147,6 +147,7 @@ public class ArrayDeque<T> {
             System.out.println(items[end]);
         }
     }
+
     /*
     public static void main(String[] args) {
         ArrayDeque<Integer> arrList = new ArrayDeque<>();
@@ -169,6 +170,5 @@ public class ArrayDeque<T> {
         arrList.removeFirst();
         arrList.printDeque();
     }
-
-     */
+    */
 }
