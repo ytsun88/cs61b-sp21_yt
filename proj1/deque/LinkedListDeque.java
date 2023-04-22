@@ -2,11 +2,11 @@ package deque;
 
 public class LinkedListDeque<T> implements Deque<T> {
     private class Node {
-        public Node prev;
-        public Node next;
-        public T object;
+        private Node prev;
+        private Node next;
+        private T object;
 
-        public Node(Node prev, Node next, T object) {
+        private Node(Node prev, Node next, T object) {
             this.prev = prev;
             this.next = next;
             this.object = object;

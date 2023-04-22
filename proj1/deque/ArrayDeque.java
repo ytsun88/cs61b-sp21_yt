@@ -90,7 +90,7 @@ public class ArrayDeque<T> implements Deque<T> {
         } else {
             T t;
             if (nextLast - 1 < 0) {
-                nextFirst = items.length - 1;
+                nextLast = items.length - 1;
                 t = items[items.length - 1];
                 items[items.length - 1] = null;
             } else {
@@ -149,5 +149,19 @@ public class ArrayDeque<T> implements Deque<T> {
             }
             System.out.println(items[end]);
         }
+    }
+
+    public static void main(String[] args) {
+        ArrayDeque<Integer> ad = new ArrayDeque<>();
+        ad.addFirst(10);
+        ad.addFirst(20);
+        ad.addFirst(30);
+        ad.addLast(40);
+        ad.addLast(50);
+        ad.printDeque();
+        ad.removeLast();
+        ad.removeLast();
+        ad.removeLast();
+        ad.printDeque();
     }
 }
