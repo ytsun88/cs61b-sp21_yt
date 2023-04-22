@@ -154,13 +154,4 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
             return item;
         }
     }
-
-    public static void main(String[] args) {
-        LinkedListDeque<Integer> lld = new LinkedListDeque<>();
-        lld.addFirst(10);
-        lld.addLast(20);
-        lld.addLast(30);
-        lld.printDeque();
-        System.out.println(lld.getRecursive(2));
-    }
 }
