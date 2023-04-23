@@ -194,7 +194,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
                     begin += 1;
                 }
             }
-            System.out.println(items[end]);
+            System.out.println(items[end] + " ");
         }
     }
 }
