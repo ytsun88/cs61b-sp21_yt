@@ -35,32 +35,60 @@
     <option name="showModules" value="false" />
     <option name="sortByType" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/tomsu/OneDrive/桌面/Algorithms, part 1/hello/.lift/algs4.jar",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "build.tools"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/tomsu/OneDrive/桌面/Algorithms, part 1/hello/.lift/algs4.jar&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;build.tools&quot;
   }
-}]]></component>
-  <component name="RunManager">
+}</component>
+  <component name="RunManager" selected="Application.deque.LinkedListDeque">
     <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+      <method v="2" />
+    </configuration>
+    <configuration name="deque.ArrayDeque" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="deque.ArrayDeque" />
+      <module name="proj1" />
+      <method v="2" />
+    </configuration>
+    <configuration name="deque.LinkedListDeque" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="deque.LinkedListDeque" />
+      <module name="proj1" />
+      <method v="2" />
+    </configuration>
+    <configuration name="gh2.GuitarHeroLite" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="gh2.GuitarHeroLite" />
+      <module name="proj1" />
+      <method v="2" />
+    </configuration>
+    <configuration name="gh2.TTFAF" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="gh2.TTFAF" />
+      <module name="proj1" />
+      <method v="2" />
     </configuration>
     <configuration name="LinkedListDequeTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="proj1" />
       <option name="PACKAGE_NAME" value="deque" />
       <option name="MAIN_CLASS_NAME" value="deque.LinkedListDequeTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestGuitarString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="proj1" />
+      <option name="PACKAGE_NAME" value="gh2" />
+      <option name="MAIN_CLASS_NAME" value="gh2.TestGuitarString" />
       <option name="TEST_OBJECT" value="class" />
       <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
       <method v="2">
@@ -77,8 +105,20 @@
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.LinkedListDequeTest" />
+        <item itemvalue="JUnit.TestGuitarString" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/deque/LinkedListDequeTest.java</url>
+          <line>143</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
 </project>

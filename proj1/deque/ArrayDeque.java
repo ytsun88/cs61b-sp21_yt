@@ -40,6 +40,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
     }
 
+    @Override
     public void addFirst(T t) {
         if (size == items.length) {
             incrSize(size * 2);
@@ -52,6 +53,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         size += 1;
     }
 
+    @Override
     public void addLast(T t) {
         if (size == items.length) {
             incrSize(size * 2);
@@ -64,6 +66,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         size += 1;
     }
 
+    @Override
     public T removeFirst() {
         if (isEmpty()) {
             return null;
@@ -86,6 +89,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
     }
 
+    @Override
     public T removeLast() {
         if (isEmpty()) {
             return null;
@@ -108,6 +112,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
     }
 
+    @Override
     public T get(int i) {
         if (i > size) {
             return null;
@@ -118,6 +123,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return items[nextFirst + 1 + i];
     }
 
+    @Override
     public int size() {
         return size;
     }
@@ -133,7 +139,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (!(o instanceof ArrayDeque)) {
             return false;
         }
-        ArrayDeque<?> ad = (ArrayDeque<?>) o;
+        ArrayDeque<T> ad = (ArrayDeque<T>) o;
         if (ad.size() != size) {
             return false;
         }
@@ -174,27 +180,11 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
      */
 
+    @Override
     public void printDeque() {
-        int begin = nextFirst + 1;
-        int end = nextLast - 1;
-        if (isEmpty()) {
-            System.out.println();
-        } else {
-            if (begin > items.length - 1) {
-                begin = 0;
-            }
-            if (end < 0) {
-                end = items.length - 1;
-            }
-            while (begin != end) {
-                if (begin > items.length - 1) {
-                    begin = 0;
-                } else {
-                    System.out.print(items[begin] + " ");
-                    begin += 1;
-                }
-            }
-            System.out.println(items[end] + " ");
+        for (int i = 0; i < size; i++) {
+            System.out.print(get(i) + " ");
         }
+        System.out.println();
     }
 }

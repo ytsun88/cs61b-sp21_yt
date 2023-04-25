@@ -25,6 +25,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         sentinel.next = sentinel;
     }
 
+    @Override
     public void addFirst(T t) {
         Node<T> firstNode = sentinel.next;
         sentinel.next = new Node<>(sentinel, sentinel.next, t);
@@ -32,6 +33,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         size += 1;
     }
 
+    @Override
     public void addLast(T t) {
         Node<T> lastNode = sentinel.prev;
         sentinel.prev = new Node<>(sentinel.prev, sentinel, t);
@@ -46,11 +48,12 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     }
      */
 
+    @Override
     public int size() {
         return size;
     }
 
-
+    @Override
     public void printDeque() {
         Node<T> p = sentinel.next;
         while (p != sentinel) {
@@ -60,6 +63,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         System.out.println();
     }
 
+    @Override
     public T removeFirst() {
         if (sentinel.next == sentinel) {
             return null;
@@ -71,6 +75,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return removedObject;
     }
 
+    @Override
     public T removeLast() {
         if (sentinel.prev == sentinel) {
             size = 0;
@@ -83,6 +88,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return removedObject;
     }
 
+    @Override
     public T get(int index) {
         Node<T> p = sentinel.next;
         if (index > size) {
@@ -114,7 +120,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return new LinkedListDequeIterator();
     }
 
-    @Override
     public boolean equals(Object o) {
         if (o == null) {
             return false;
@@ -125,7 +130,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         if (!(o instanceof LinkedListDeque)) {
             return false;
         }
-        LinkedListDeque<?> lld = (LinkedListDeque<?>) o;
+        LinkedListDeque<T> lld = (LinkedListDeque<T>) o;
         if (lld.size() != size) {
             return false;
         }
