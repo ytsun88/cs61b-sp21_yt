@@ -143,16 +143,20 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     private class LinkedListIterator implements Iterator<T> {
-        private Node<T> p;
+        private int wizPos;
+
+        private LinkedListIterator() {
+            wizPos = 0;
+        }
 
         public boolean hasNext() {
-            return p.next != sentinel;
+            return wizPos < size;
         }
 
         public T next() {
-            T nextItem = p.object;
-            p = p.next;
-            return nextItem;
+            T item = get(wizPos);
+            wizPos += 1;
+            return item;
         }
     }
 }
