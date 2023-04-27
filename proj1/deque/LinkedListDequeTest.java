@@ -133,11 +133,11 @@ public class LinkedListDequeTest {
             assertEquals("Should have the same value", i, (double) lld1.removeLast(), 0.0);
         }
     }
-
+    
     @Test
     public void equalsLinkedListDequeArrayDeque() {
-        ArrayDeque<Integer> ad = new ArrayDeque<>();
-        LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+        Deque<Integer> ad = new ArrayDeque<>();
+        Deque<Integer> lld = new LinkedListDeque<>();
 
         int N = 5000;
         for (int i = 0; i < N; i += 1) {
@@ -169,5 +169,6 @@ public class LinkedListDequeTest {
                 assertEquals(ad.size(), lld.size());
             }
         }
+        System.out.println(ad.equals(lld));
     }
 }
