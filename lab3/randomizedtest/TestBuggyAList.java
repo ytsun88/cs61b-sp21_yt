@@ -12,8 +12,8 @@ public class TestBuggyAList {
     // YOUR TESTS HERE
     @Test
     public void testThreeAddThreeRemove() {
-        AListNoResizing<Integer> expected = new AListNoResizing<>();
-        BuggyAList<Integer> actual = new BuggyAList<>();
+        AListNoResizing<Integer> expected = new AListNoResizing<Integer>();
+        BuggyAList<Integer> actual = new BuggyAList<Integer>();
 
         expected.addLast(4);
         expected.addLast(5);
@@ -32,8 +32,8 @@ public class TestBuggyAList {
 
     @Test
     public void randomizedTest() {
-        AListNoResizing<Integer> expected = new AListNoResizing<>();
-        BuggyAList<Integer> actual = new BuggyAList<>();
+        AListNoResizing<Integer> expected = new AListNoResizing<Integer>();
+        BuggyAList<Integer> actual = new BuggyAList<Integer>();
 
         int N = 5000;
         for (int i = 0; i < N; i += 1) {
