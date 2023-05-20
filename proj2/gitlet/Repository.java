@@ -213,7 +213,6 @@ public class Repository {
             printLog(commit);
             parents.remove(0);
         }
-        System.out.println();
     }
 
     public static void globalLog() {
@@ -325,7 +324,19 @@ public class Repository {
     }
 
     public static void checkoutBranch(String branchName) {
-
+        File branch = join(HEADS_DIR, branchName);
+        if (!branch.exists()) {
+            System.out.println("No such branch exists.");
+            System.exit(0);
+        }
+        String currentBranch = readContentsAsString(HEAD);
+        if (currentBranch.equals(branchName)) {
+            System.out.println("No need to checkout the current branch.");
+            System.exit(0);
+        }
+        checkUntracked();
+        checkoutBranchFiles(branchName);
+        writeContents(HEAD, branchName);
     }
 
     public static void checkoutCommit(String commitID, String fileName) {
@@ -338,11 +349,60 @@ public class Repository {
         writeContents(file, targetBlob.getContent());
     }
 
+    public static void branch(String branchName) {
+        Commit head = getHeadCommit();
+        String headID = head.getID();
+        File newBranch = join(HEADS_DIR, branchName);
+        if (newBranch.exists()) {
+            System.out.println("A branch with that name already exists.");
+            System.exit(0);
+        }
+        writeContents(newBranch, headID);
+    }
+
+    public static void rmBranch(String branchName) {
+        File branch = join(HEADS_DIR, branchName);
+        if (!branch.exists()) {
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        }
+        if (readContentsAsString(HEAD).equals(branchName)) {
+            System.out.println("Cannot remove the current branch.");
+            System.exit(0);
+        }
+        branch.delete();
+    }
+
+    public static void reset(String commitID) {
+        File commitFile = join(OBJECTS_DIR, commitID);
+        if (!commitFile.exists()) {
+            System.out.println("No commit with that id exists.");
+            System.exit(0);
+        }
+        checkUntracked();
+        Commit commit = readObject(commitFile, Commit.class);
+        checkoutCommitFiles(commit);
+        /* Moves the current branch’s head to that commit node. */
+        File branch = join(HEADS_DIR, readContentsAsString(HEAD));
+        writeContents(branch, commitID);
+    }
+
+    public static void merge(String branchName) {
+        
+    }
+
     public static void checkInitialDir() {
         if (!GITLET_DIR.isDirectory()) {
             System.out.println("Not in an initialized Gitlet directory.");
             System.exit(0);
         }
+    }
+
+    private static Commit getHeadCommit(String branchName) {
+        File branchFile = join(HEADS_DIR, branchName);
+        String headId = readContentsAsString(branchFile);
+        File file = join(OBJECTS_DIR, headId);
+        return readObject(file, Commit.class);
     }
 
     private static Commit getHeadCommit() {
@@ -359,5 +419,52 @@ public class Repository {
         System.out.println("Date: " + commit.getTimestamp());
         System.out.println(commit.getMessage());
         System.out.println();
+    }
+
+    private static void checkUntracked() {
+        Commit head = getHeadCommit();
+        Set<String> currentBlobsSet = head.getBlobs().keySet();
+        List<String> filesInCWD = plainFilenamesIn(CWD);
+        for (String file : filesInCWD) {
+            if (!currentBlobsSet.contains(file)) {
+                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                System.exit(0);
+            }
+        }
+    }
+
+    private static void checkoutBranchFiles(String branchName) {
+        Commit branchHead = getHeadCommit(branchName);
+        List<String> filesInCWD = plainFilenamesIn(CWD);
+        Set<String> blobsSet = branchHead.getBlobs().keySet();
+        for (String file : filesInCWD) {
+            if (!blobsSet.contains(file)) {
+                restrictedDelete(join(CWD, file));
+            }
+        }
+        for (String fileName : blobsSet) {
+            File file = join(CWD, fileName);
+            String blobID = branchHead.getBlobs().get(fileName);
+            File targetFile = join(STAGING_DIR, blobID);
+            Blob targetBlob = readObject(targetFile, Blob.class);
+            writeContents(file, targetBlob.getContent());
+        }
+    }
+
+    private static void checkoutCommitFiles(Commit commit) {
+        List<String> filesInCWD = plainFilenamesIn(CWD);
+        Set<String> blobsSet = commit.getBlobs().keySet();
+        for (String file : filesInCWD) {
+            if (!blobsSet.contains(file)) {
+                restrictedDelete(join(CWD, file));
+            }
+        }
+        for (String fileName : blobsSet) {
+            File file = join(CWD, fileName);
+            String blobID = commit.getBlobs().get(fileName);
+            File targetFile = join(STAGING_DIR, blobID);
+            Blob targetBlob = readObject(targetFile, Blob.class);
+            writeContents(file, targetBlob.getContent());
+        }
     }
 }

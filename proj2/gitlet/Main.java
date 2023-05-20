@@ -79,6 +79,26 @@ public class Main {
                     System.exit(0);
                 }
             }
+            case "branch" -> {
+                validateNumArgs(args, 2);
+                Repository.checkInitialDir();
+                Repository.branch(args[1]);
+            }
+            case "rm-branch" -> {
+                validateNumArgs(args, 2);
+                Repository.checkInitialDir();
+                Repository.rmBranch(args[1]);
+            }
+            case "reset" -> {
+                validateNumArgs(args, 2);
+                Repository.checkInitialDir();
+                Repository.reset(args[1]);
+            }
+            case "merge" -> {
+                validateNumArgs(args, 2);
+                Repository.checkInitialDir();
+                Repository.merge(args[1]);
+            }
             default -> {
                 System.out.println("No command with that name exists.");
                 System.exit(0);
