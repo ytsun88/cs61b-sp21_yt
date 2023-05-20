@@ -97,7 +97,7 @@ class Utils {
 
     /**
      * Return the concatentation of FIRST and OTHERS into a File designator,
-     * analogous to the {@link java.nio.file.Paths.#get(String, String[])}
+     * analogous to the {link java.nio.file.Paths.#get(String, String[])}
      * method.
      */
     static File join(String first, String... others) {
@@ -106,7 +106,7 @@ class Utils {
 
     /**
      * Return the concatentation of FIRST and OTHERS into a File designator,
-     * analogous to the {@link java.nio.file.Paths.#get(String, String[])}
+     * analogous to the {link java.nio.file.Paths.#get(String, String[])}
      * method.
      */
     static File join(File first, String... others) {

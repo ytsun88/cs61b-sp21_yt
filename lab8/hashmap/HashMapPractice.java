@@ -2,15 +2,7 @@ package hashmap;
 
 import java.util.*;
 
-/**
- * A hash table-backed Map implementation. Provides amortized constant time
- * access to elements via get(), remove(), and put() in the best case.
- * <p>
- * Assumes null keys will never be inserted, and does not resize down upon remove().
- *
- * @author YOUR NAME HERE
- */
-public class MyHashMap<K, V> implements Map61B<K, V> {
+public class HashMapPractice<K, V> implements Map61B<K, V> {
 
     /**
      * Protected helper class to store key/value pairs
@@ -27,21 +19,21 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
 
     /* Instance Variables */
-    private Collection<Node>[] buckets;
-    private static final int DEFAULT_INITIAL_SIZE = 16;
-    private static final double DEFAULT_MAX_LOAD_FACTOR = 0.75;
-    private double maxLoad;
     private int size = 0;
+    private static final int DEFAULT_TABLE_LENGTH = 16;
+    private static final double DEFAULT_LOAD_FACTOR = 0.75;
+    private Collection<Node>[] buckets;
+    private final double loadFactor;
 
     /**
      * Constructors
      */
-    public MyHashMap() {
-        this(DEFAULT_INITIAL_SIZE, DEFAULT_MAX_LOAD_FACTOR);
+    public HashMapPractice() {
+        this(DEFAULT_TABLE_LENGTH, DEFAULT_LOAD_FACTOR);
     }
 
-    public MyHashMap(int initialSize) {
-        this(initialSize, DEFAULT_MAX_LOAD_FACTOR);
+    public HashMapPractice(int initialSize) {
+        this(initialSize, DEFAULT_LOAD_FACTOR);
     }
 
     /**
@@ -51,9 +43,9 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param initialSize initial size of backing array
      * @param maxLoad     maximum load factor
      */
-    public MyHashMap(int initialSize, double maxLoad) {
+    public HashMapPractice(int initialSize, double maxLoad) {
         this.buckets = createTable(initialSize);
-        this.maxLoad = maxLoad;
+        this.loadFactor = maxLoad;
     }
 
     /**
@@ -102,49 +94,53 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return table;
     }
 
-
+    @Override
     public void clear() {
-        buckets = createTable(DEFAULT_INITIAL_SIZE);
+        buckets = createTable(DEFAULT_TABLE_LENGTH);
         size = 0;
     }
 
+    @Override
     public boolean containsKey(K key) {
-        return getNode(key) != null;
+        int id = getKeyID(key);
+        for (Node node : buckets[id]) {
+            if (node.key == key) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    private Node getNode(K key) {
-        int index = getIndex(key);
-        for (Node n : buckets[index]) {
-            if (n.key.equals(key)) {
-                return n;
+    @Override
+    public V get(K key) {
+        int id = getKeyID(key);
+        for (Node node : buckets[id]) {
+            if (node.key == key) {
+                return node.value;
             }
         }
         return null;
     }
 
-    public V get(K key) {
-        Node node = getNode(key);
-        if (node == null) {
-            return null;
-        }
-        return node.value;
-    }
-
+    @Override
     public int size() {
         return size;
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("ICAST_IDIV_CAST_TO_DOUBLE")
+    @Override
     public void put(K key, V value) {
-        int index = getIndex(key);
-        Node node = getNode(key);
-        if (node != null) {
-            node.value = value;
-            return;
+        int id = getKeyID(key);
+        if (buckets[id] == null) {
+            buckets[id].add(createNode(key, value));
+            size += 1;
         }
-        node = createNode(key, value);
-        buckets[index].add(node);
-        size += 1;
-        if ((double) (size / buckets.length) > maxLoad) {
+        for (Node node : buckets[id]) {
+            if (node.key == key) {
+                node.value = value;
+            }
+        }
+        if ((double) (size / buckets.length) > loadFactor) {
             resize(2 * buckets.length);
         }
     }
@@ -207,16 +203,16 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         }
     }
 
-    private int getIndex(K key) {
-        int hashcode = key.hashCode();
-        return Math.floorMod(hashcode, buckets.length);
+    private int getKeyID(K key) {
+        int id = key.hashCode();
+        return Math.floorMod(id, buckets.length);
     }
 
     public V remove(K key) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 }

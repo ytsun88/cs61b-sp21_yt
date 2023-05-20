@@ -1,12 +1,12 @@
 # Gitlet Design Document
 
-**Name**:
+**Name**: YTSUN
 
 ## Classes and Data Structures
 
-### Class 1
+### Commit
 
-#### Fields
+#### Instance variable
 
 1. Field 1
 2. Field 2
