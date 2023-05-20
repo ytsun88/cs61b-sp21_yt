@@ -112,17 +112,21 @@ public class Repository {
                 }
             }
         } else {
-            if (!stage.getAdded().containsKey(fileName)) {
-                stage.addFile(fileName, blobID);
-                File stagedFile = join(STAGING_DIR, blobID);
-                writeObject(stagedFile, blob);
-                writeObject(STAGE, stage);
+            if (stage.getRemoved().contains(fileName)) {
+                stage.getRemoved().remove(fileName);
             } else {
-                if (!stage.getAdded().get(fileName).equals(blobID)) {
+                if (!stage.getAdded().containsKey(fileName)) {
                     stage.addFile(fileName, blobID);
                     File stagedFile = join(STAGING_DIR, blobID);
                     writeObject(stagedFile, blob);
                     writeObject(STAGE, stage);
+                } else {
+                    if (!stage.getAdded().get(fileName).equals(blobID)) {
+                        stage.addFile(fileName, blobID);
+                        File stagedFile = join(STAGING_DIR, blobID);
+                        writeObject(stagedFile, blob);
+                        writeObject(STAGE, stage);
+                    }
                 }
             }
         }
@@ -452,7 +456,8 @@ public class Repository {
         for (String file : filesInCWD) {
             if (!currentBlobsSet.contains(file)) {
                 System.out.println(
-                        "There is an untracked file in the way; delete it, or add and commit it first.");
+                        "There is an untracked file in the way;" +
+                                " delete it, or add and commit it first.");
                 System.exit(0);
             }
         }
