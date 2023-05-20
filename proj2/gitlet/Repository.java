@@ -144,7 +144,7 @@ public class Repository {
         newParents.add(0, headID);
         StagingArea stage = readObject(STAGE, StagingArea.class);
         Map<String, String> stagedBlobs = stage.getAdded();
-        if (stagedBlobs.isEmpty()) {
+        if (stage.isEmpty()) {
             System.out.println("No changes added to the commit.");
             System.exit(0);
         }
@@ -388,7 +388,20 @@ public class Repository {
     }
 
     public static void merge(String branchName) {
-        
+        StagingArea stage = readObject(STAGE, StagingArea.class);
+        if (!stage.isEmpty()) {
+            System.out.println("You have uncommitted changes.");
+            System.exit(0);
+        }
+        File branch = join(HEADS_DIR, branchName);
+        if (!branch.exists()) {
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        }
+        if (readContentsAsString(HEAD).equals(branchName)) {
+            System.out.println("Cannot merge a branch with itself.");
+            System.exit(0);
+        }
     }
 
     public static void checkInitialDir() {
