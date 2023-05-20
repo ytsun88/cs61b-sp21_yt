@@ -213,6 +213,7 @@ public class Repository {
             printLog(commit);
             parents.remove(0);
         }
+        System.out.println();
     }
 
     public static void globalLog() {
