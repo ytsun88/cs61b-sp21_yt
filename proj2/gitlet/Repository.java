@@ -53,7 +53,8 @@ public class Repository {
 
     public static void init() {
         if (GITLET_DIR.exists() && GITLET_DIR.isDirectory()) {
-            System.out.println("A Gitlet version-control system already exists in the current directory.");
+            System.out.println(
+                    "A Gitlet version-control system already exists in the current directory.");
             System.exit(0);
         }
 
@@ -191,7 +192,8 @@ public class Repository {
             Blob blob = new Blob(file);
             String blobID = blob.getId();
 
-            if (head.getBlobs().containsKey(fileName) && head.getBlobs().get(fileName).equals(blobID)) {
+            if (head.getBlobs().containsKey(fileName)
+                    && head.getBlobs().get(fileName).equals(blobID)) {
                 restrictedDelete(file);
             }
         }
@@ -281,14 +283,20 @@ public class Repository {
         }
 
         for (String blob : blobsSet) {
-            /* Not staged for removal, but tracked in the current commit and deleted from the working directory. */
+            /*
+             * Not staged for removal,
+             * but tracked in the current commit and deleted from the working directory.
+             */
             if (!filesInCWD.contains(blob)) {
                 if (!removedSet.contains(blob)) {
                     System.out.println(blob + " (deleted)");
                 }
             } else {
                 Blob check = new Blob(join(CWD, blob));
-                /* Tracked in the current commit, changed in the working directory, but not staged */
+                /*
+                 * Tracked in the current commit,
+                 * changed in the working directory, but not staged.
+                 */
                 if (!check.getId().equals(head.getBlobs().get(blob)) && !stagedSet.contains(blob)) {
                     System.out.println(blob + " (modified)");
                 }
@@ -443,7 +451,8 @@ public class Repository {
         List<String> filesInCWD = plainFilenamesIn(CWD);
         for (String file : filesInCWD) {
             if (!currentBlobsSet.contains(file)) {
-                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                System.out.println(
+                        "There is an untracked file in the way; delete it, or add and commit it first.");
                 System.exit(0);
             }
         }
