@@ -96,18 +96,23 @@ public class Repository {
         String blobID = blob.getId();
 
         if (head.getBlobs().containsKey(fileName)) {
-            if (!head.getBlobs().get(fileName).equals(blobID)) {
-                if (!stage.getAdded().containsKey(fileName)) {
-                    stage.addFile(fileName, blobID);
-                    File stagedFile = join(STAGING_DIR, blobID);
-                    writeObject(stagedFile, blob);
-                    writeObject(STAGE, stage);
-                } else {
-                    if (!stage.getAdded().get(fileName).equals(blobID)) {
+            if (stage.getRemoved().contains(fileName)) {
+                stage.getRemoved().remove(fileName);
+                writeObject(STAGE, stage);
+            } else {
+                if (!head.getBlobs().get(fileName).equals(blobID)) {
+                    if (!stage.getAdded().containsKey(fileName)) {
                         stage.addFile(fileName, blobID);
                         File stagedFile = join(STAGING_DIR, blobID);
                         writeObject(stagedFile, blob);
                         writeObject(STAGE, stage);
+                    } else {
+                        if (!stage.getAdded().get(fileName).equals(blobID)) {
+                            stage.addFile(fileName, blobID);
+                            File stagedFile = join(STAGING_DIR, blobID);
+                            writeObject(stagedFile, blob);
+                            writeObject(STAGE, stage);
+                        }
                     }
                 }
             }
