@@ -324,7 +324,7 @@ public class Repository {
     }
 
     public static void checkoutBranch(String branchName) {
-        
+
     }
 
     public static void checkoutCommit(String commitID, String fileName) {
@@ -357,13 +357,6 @@ public class Repository {
         System.out.println("commit " + commit.getID());
         System.out.println("Date: " + commit.getTimestamp());
         System.out.println(commit.getMessage());
-        System.out.print("Tracking: ");
-        Map<String, String> blobs = commit.getBlobs();
-        Set<String> fileNames = blobs.keySet();
-        for (String fileName : fileNames) {
-            System.out.print(fileName + " ");
-        }
-        System.out.println();
         System.out.println();
     }
 }
