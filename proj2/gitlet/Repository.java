@@ -6,19 +6,12 @@ import java.util.Map;
 import java.util.Set;
 
 import static gitlet.Utils.*;
-// TODO: any imports you need here
 
 /**
- * Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
- *
- * @author TODO
+ * @author ytsun
  */
 public class Repository {
-    /**
-     * TODO: add instance variables here.
-     *
+    /*
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
      * variable is used. We've provided two examples for you.
@@ -57,8 +50,6 @@ public class Repository {
      * Head pointer.
      */
     public static final File HEAD = join(GITLET_DIR, "HEAD");
-
-    /* TODO: fill in the rest of this class. */
 
     public static void init() {
         if (GITLET_DIR.exists() && GITLET_DIR.isDirectory()) {
@@ -137,6 +128,10 @@ public class Repository {
     }
 
     public static void commit(String message) {
+        if (message.equals("")) {
+            System.out.println("Please enter a commit message.");
+            System.exit(0);
+        }
         Commit head = getHeadCommit();
         Map<String, String> originBlobs = head.getBlobs();
         List<String> newParents = head.getParents();
@@ -244,7 +239,7 @@ public class Repository {
 
     public static void status() {
         List<String> branches = plainFilenamesIn(HEADS_DIR);
-        System.out.println("=== Branch ===");
+        System.out.println("=== Branches ===");
         for (String branch : branches) {
             if (readContentsAsString(HEAD).equals(branch)) {
                 System.out.println("*" + branch);
@@ -341,7 +336,15 @@ public class Repository {
 
     public static void checkoutCommit(String commitID, String fileName) {
         File commitFile = join(OBJECTS_DIR, commitID);
+        if (!commitFile.exists()) {
+            System.out.println("No commit with that id exists.");
+            System.exit(0);
+        }
         Commit commit = readObject(commitFile, Commit.class);
+        if (!commit.getBlobs().containsKey(fileName)) {
+            System.out.println("File does not exist in that commit.");
+            System.exit(0);
+        }
         String blobID = commit.getBlobs().get(fileName);
         File file = join(CWD, fileName);
         File targetFile = join(STAGING_DIR, blobID);

@@ -30,13 +30,7 @@ public class Main {
                 Repository.add(args[1]);
             }
             case "commit" -> {
-                if (args.length > 2) {
-                    System.out.println("Incorrect operands.");
-                    System.exit(0);
-                } else if (args.length == 1) {
-                    System.out.println("Please enter a commit message.");
-                    System.exit(0);
-                }
+                validateNumArgs(args, 2);
                 Repository.checkInitialDir();
                 Repository.commit(args[1]);
             }
