@@ -184,6 +184,8 @@ public class Repository {
         if (!file.exists()) {
             if (stage.getAdded().containsKey(fileName)) {
                 stage.getAdded().remove(fileName);
+            } else {
+                stage.getRemoved().add(fileName);
             }
         } else {
 
