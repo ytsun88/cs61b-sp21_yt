@@ -114,6 +114,7 @@ public class Repository {
         } else {
             if (stage.getRemoved().contains(fileName)) {
                 stage.getRemoved().remove(fileName);
+                writeObject(STAGE, stage);
             } else {
                 if (!stage.getAdded().containsKey(fileName)) {
                     stage.addFile(fileName, blobID);
@@ -144,11 +145,15 @@ public class Repository {
         newParents.add(0, headID);
         StagingArea stage = readObject(STAGE, StagingArea.class);
         Map<String, String> stagedBlobs = stage.getAdded();
+        Set<String> removedBlobs = stage.getRemoved();
         if (stage.isEmpty()) {
             System.out.println("No changes added to the commit.");
             System.exit(0);
         }
         originBlobs.putAll(stagedBlobs);
+        for (String removed : removedBlobs) {
+            originBlobs.remove(removed);
+        }
         Commit newCommit = new Commit(message, newParents, originBlobs);
 
 
@@ -169,7 +174,6 @@ public class Repository {
     public static void rm(String fileName) {
         File file = join(CWD, fileName);
         Commit head = getHeadCommit();
-        String headID = head.getID();
         StagingArea stage = readObject(STAGE, StagingArea.class);
 
         if (!file.exists()) {
@@ -191,14 +195,14 @@ public class Repository {
                 stage.getAdded().remove(fileName);
             } else {
                 stage.getRemoved().add(fileName);
-            }
 
-            Blob blob = new Blob(file);
-            String blobID = blob.getId();
+                Blob blob = new Blob(file);
+                String blobID = blob.getId();
 
-            if (head.getBlobs().containsKey(fileName)
-                    && head.getBlobs().get(fileName).equals(blobID)) {
-                restrictedDelete(file);
+                if (head.getBlobs().containsKey(fileName)
+                        && head.getBlobs().get(fileName).equals(blobID)) {
+                    restrictedDelete(file);
+                }
             }
         }
         writeObject(STAGE, stage);
@@ -285,7 +289,6 @@ public class Repository {
                 }
             }
         }
-
         for (String blob : blobsSet) {
             /*
              * Not staged for removal,
@@ -456,8 +459,8 @@ public class Repository {
         for (String file : filesInCWD) {
             if (!currentBlobsSet.contains(file)) {
                 System.out.println(
-                        "There is an untracked file in the way;" +
-                                " delete it, or add and commit it first.");
+                        "There is an untracked file in the way;"
+                                + " delete it, or add and commit it first.");
                 System.exit(0);
             }
         }
