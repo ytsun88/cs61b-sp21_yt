@@ -357,7 +357,12 @@ public class Repository {
     }
 
     public static void checkoutCommit(String commitID, String fileName) {
-        File commitFile = join(OBJECTS_DIR, commitID);
+        String checkedID = checkCommitID(commitID);
+        if (checkedID == null) {
+            System.out.println("No commit with that id exists.");
+            System.exit(0);
+        }
+        File commitFile = join(OBJECTS_DIR, checkedID);
         if (!commitFile.exists()) {
             System.out.println("No commit with that id exists.");
             System.exit(0);
@@ -399,7 +404,12 @@ public class Repository {
     }
 
     public static void reset(String commitID) {
-        File commitFile = join(OBJECTS_DIR, commitID);
+        String checkedID = checkCommitID(commitID);
+        if (checkedID == null) {
+            System.out.println("No commit with that id exists.");
+            System.exit(0);
+        }
+        File commitFile = join(OBJECTS_DIR, checkedID);
         if (!commitFile.exists()) {
             System.out.println("No commit with that id exists.");
             System.exit(0);
@@ -410,6 +420,8 @@ public class Repository {
         /* Moves the current branch’s head to that commit node. */
         File branch = join(HEADS_DIR, readContentsAsString(HEAD));
         writeContents(branch, commitID);
+        StagingArea stage = new StagingArea();
+        writeObject(STAGE, stage);
     }
 
     public static void merge(String branchName) {
@@ -463,8 +475,12 @@ public class Repository {
         Commit head = getHeadCommit();
         Set<String> currentBlobsSet = head.getBlobs().keySet();
         List<String> filesInCWD = plainFilenamesIn(CWD);
+        StagingArea stage = readObject(STAGE, StagingArea.class);
+        Set<String> stagedSet = stage.getAdded().keySet();
+        Set<String> removedSet = stage.getRemoved();
         for (String file : filesInCWD) {
-            if (!currentBlobsSet.contains(file)) {
+            if (!currentBlobsSet.contains(file) && !stagedSet.contains(file)
+                    && !removedSet.contains(file)) {
                 System.out.println(
                         "There is an untracked file in the way;"
                                 + " delete it, or add and commit it first.");
@@ -494,8 +510,12 @@ public class Repository {
     private static void checkoutCommitFiles(Commit commit) {
         List<String> filesInCWD = plainFilenamesIn(CWD);
         Set<String> blobsSet = commit.getBlobs().keySet();
+        StagingArea stage = readObject(STAGE, StagingArea.class);
+        Set<String> stagedSet = stage.getAdded().keySet();
+        Set<String> removedSet = stage.getRemoved();
         for (String file : filesInCWD) {
-            if (!blobsSet.contains(file)) {
+            if (!blobsSet.contains(file) && !stagedSet.contains(file)
+                    && !removedSet.contains(file)) {
                 restrictedDelete(join(CWD, file));
             }
         }
@@ -506,5 +526,20 @@ public class Repository {
             Blob targetBlob = readObject(targetFile, Blob.class);
             writeContents(file, targetBlob.getContent());
         }
+    }
+
+    private static String checkCommitID(String ID) {
+        if (ID.length() == 40) {
+            return ID;
+        } else if (ID.length() < 40) {
+            List<String> commitIDs = plainFilenamesIn(OBJECTS_DIR);
+            for (String commitID : commitIDs) {
+                if (commitID.startsWith(ID)) {
+                    return commitID;
+                }
+            }
+            return null;
+        }
+        return null;
     }
 }
