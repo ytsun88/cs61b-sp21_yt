@@ -351,8 +351,10 @@ public class Repository {
             System.out.println("No need to checkout the current branch.");
             System.exit(0);
         }
-        checkUntracked();
+        checkBranchUntracked(branchName);
         checkoutBranchFiles(branchName);
+        StagingArea stage = new StagingArea();
+        writeObject(STAGE, stage);
         writeContents(HEAD, branchName);
     }
 
@@ -489,12 +491,40 @@ public class Repository {
         }
     }
 
+    private static void checkBranchUntracked(String branchName) {
+        Commit head = getHeadCommit();
+        Commit branchHead = getHeadCommit(branchName);
+        Set<String> blobsSet = branchHead.getBlobs().keySet();
+        Set<String> currentBlobsSet = head.getBlobs().keySet();
+        List<String> filesInCWD = plainFilenamesIn(CWD);
+        StagingArea stage = readObject(STAGE, StagingArea.class);
+        Set<String> stagedSet = stage.getAdded().keySet();
+        Set<String> removedSet = stage.getRemoved();
+        for (String file : filesInCWD) {
+            if (!currentBlobsSet.contains(file) && !stagedSet.contains(file)
+                    && !removedSet.contains(file)) {
+                Blob fileBlob = new Blob(join(CWD, file));
+                if (blobsSet.contains(file)
+                        && !fileBlob.getId().equals(branchHead.getBlobs().get(file))) {
+                    System.out.println(
+                            "There is an untracked file in the way;"
+                                    + " delete it, or add and commit it first.");
+                    System.exit(0);
+                }
+            }
+        }
+    }
+
     private static void checkoutBranchFiles(String branchName) {
         Commit branchHead = getHeadCommit(branchName);
         List<String> filesInCWD = plainFilenamesIn(CWD);
         Set<String> blobsSet = branchHead.getBlobs().keySet();
+        StagingArea stage = readObject(STAGE, StagingArea.class);
+        Set<String> stagedSet = stage.getAdded().keySet();
+        Set<String> removedSet = stage.getRemoved();
         for (String file : filesInCWD) {
-            if (!blobsSet.contains(file)) {
+            if (!blobsSet.contains(file) && !stagedSet.contains(file)
+                    && !removedSet.contains(file)) {
                 restrictedDelete(join(CWD, file));
             }
         }
@@ -528,13 +558,13 @@ public class Repository {
         }
     }
 
-    private static String checkCommitID(String ID) {
-        if (ID.length() == 40) {
-            return ID;
-        } else if (ID.length() < 40) {
+    private static String checkCommitID(String id) {
+        if (id.length() == 40) {
+            return id;
+        } else if (id.length() < 40) {
             List<String> commitIDs = plainFilenamesIn(OBJECTS_DIR);
             for (String commitID : commitIDs) {
-                if (commitID.startsWith(ID)) {
+                if (commitID.startsWith(id)) {
                     return commitID;
                 }
             }
