@@ -426,7 +426,6 @@ public class Repository {
 
     public static void merge(String branchName) {
         StagingArea stage = readObject(STAGE, StagingArea.class);
-        checkBranchUntracked(branchName);
         if (!stage.isEmpty()) {
             System.out.println("You have uncommitted changes.");
             System.exit(0);
@@ -440,6 +439,7 @@ public class Repository {
             System.out.println("Cannot merge a branch with itself.");
             System.exit(0);
         }
+        checkBranchUntracked(branchName);
         Commit currentHead = getHeadCommit();
         Commit branchHead = getHeadCommit(branchName);
         Commit lca = getLatestCommonAncestor(currentHead, branchHead);
@@ -470,6 +470,8 @@ public class Repository {
             }
             if (!lId.equals(hId) && !lId.equals(oId)) {
                 Blob conflictBlob = writeConflictBlob(filename);
+                File file = join(STAGING_DIR, conflictBlob.getId());
+                writeObject(file, conflictBlob);
                 newBlobs.put(filename, conflictBlob.getId());
             }
         }
@@ -479,12 +481,11 @@ public class Repository {
         String mergeMessage = "Merged " + branchName
                 + " into " + readContentsAsString(HEAD) + ".";
         Commit commit = new Commit(mergeMessage, parents, newBlobs);
+        checkoutCommitFiles(commit);
         File result = join(OBJECTS_DIR, commit.getID());
         writeObject(result, commit);
-
         File branchFile = join(HEADS_DIR, readContentsAsString(HEAD));
         writeContents(branchFile, commit.getID());
-
         stage = new StagingArea();
         writeObject(STAGE, stage);
     }
@@ -567,6 +568,8 @@ public class Repository {
     }
 
     private static void checkoutBranchFiles(String branchName) {
+        Commit head = getHeadCommit();
+        Set<String> currentBlobsSet = head.getBlobs().keySet();
         Commit branchHead = getHeadCommit(branchName);
         List<String> filesInCWD = plainFilenamesIn(CWD);
         Set<String> blobsSet = branchHead.getBlobs().keySet();
@@ -574,8 +577,8 @@ public class Repository {
         Set<String> stagedSet = stage.getAdded().keySet();
         Set<String> removedSet = stage.getRemoved();
         for (String file : filesInCWD) {
-            if (!blobsSet.contains(file) && !stagedSet.contains(file)
-                    && !removedSet.contains(file)) {
+            if (currentBlobsSet.contains(file) && !blobsSet.contains(file)
+                    && !stagedSet.contains(file) && !removedSet.contains(file)) {
                 restrictedDelete(join(CWD, file));
             }
         }
@@ -589,14 +592,16 @@ public class Repository {
     }
 
     private static void checkoutCommitFiles(Commit commit) {
+        Commit head = getHeadCommit();
+        Set<String> currentBlobsSet = head.getBlobs().keySet();
         List<String> filesInCWD = plainFilenamesIn(CWD);
         Set<String> blobsSet = commit.getBlobs().keySet();
         StagingArea stage = readObject(STAGE, StagingArea.class);
         Set<String> stagedSet = stage.getAdded().keySet();
         Set<String> removedSet = stage.getRemoved();
         for (String file : filesInCWD) {
-            if (!blobsSet.contains(file) && !stagedSet.contains(file)
-                    && !removedSet.contains(file)) {
+            if (currentBlobsSet.contains(file) && !blobsSet.contains(file)
+                    && !stagedSet.contains(file) && !removedSet.contains(file)) {
                 restrictedDelete(join(CWD, file));
             }
         }
@@ -625,7 +630,7 @@ public class Repository {
     }
 
     private static Commit getLatestCommonAncestor(Commit head, Commit other) {
-        Set<String> headParentsSet = BFSHeadCommit(head);
+        Set<String> headParentsSet = bfsHeadCommit(head);
 
         Queue<Commit> queue = new LinkedList<>();
         queue.add(other);
@@ -645,7 +650,7 @@ public class Repository {
         return new Commit();
     }
 
-    private static Set<String> BFSHeadCommit(Commit head) {
+    private static Set<String> bfsHeadCommit(Commit head) {
         Set<String> headParentsSet = new HashSet<>();
         Queue<Commit> queue = new LinkedList<>();
         queue.add(head);
@@ -674,11 +679,11 @@ public class Repository {
 
     private static Blob writeConflictBlob(String fileName) {
         File file = join(CWD, fileName);
-        String conflictMessage = "<<<<<<< HEAD\n" +
-                "contents of file in current branch\n" +
-                "=======\n" +
-                "contents of file in given branch\n" +
-                ">>>>>>>";
+        String conflictMessage = "<<<<<<< HEAD\n"
+                + "contents of file in current branch\n"
+                + "=======\n"
+                + "contents of file in given branch\n"
+                + ">>>>>>>";
         writeContents(file, conflictMessage);
         return new Blob(file);
     }
