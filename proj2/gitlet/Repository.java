@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static gitlet.Utils.*;
@@ -471,7 +472,7 @@ public class Repository {
             }
             if (!lId.equals(hId) && !lId.equals(oId)) {
                 System.out.println("Encountered a merge conflict.");
-                Blob conflictBlob = writeConflictBlob(filename);
+                Blob conflictBlob = writeConflictBlob(filename, hId, oId);
                 File file = join(STAGING_DIR, conflictBlob.getId());
                 writeObject(file, conflictBlob);
                 newBlobs.put(filename, conflictBlob.getId());
@@ -698,12 +699,16 @@ public class Repository {
         return set;
     }
 
-    private static Blob writeConflictBlob(String fileName) {
+    private static Blob writeConflictBlob(String fileName, String hId, String oId) {
+        File headBlobFile = join(STAGING_DIR, hId);
+        Blob headBlob = readObject(headBlobFile, Blob.class);
+        File branchBlobFile = join(STAGING_DIR, oId);
+        Blob branchBlob = readObject(branchBlobFile, Blob.class);
         File file = join(CWD, fileName);
         String conflictMessage = "<<<<<<< HEAD\n"
-                + "contents of file in current branch\n"
+                + new String(headBlob.getContent(), StandardCharsets.UTF_8)
                 + "=======\n"
-                + "contents of file in given branch\n"
+                + new String(branchBlob.getContent(), StandardCharsets.UTF_8)
                 + ">>>>>>>";
         writeContents(file, conflictMessage);
         return new Blob(file);
