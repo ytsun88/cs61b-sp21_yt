@@ -414,8 +414,9 @@ public class Repository {
             System.out.println("No commit with that id exists.");
             System.exit(0);
         }
-        checkUntracked();
+
         Commit commit = readObject(commitFile, Commit.class);
+        checkUntracked(commit);
         checkoutCommitFiles(commit);
         /* Moves the current branch’s head to that commit node. */
         File branch = join(HEADS_DIR, readContentsAsString(HEAD));
@@ -469,6 +470,7 @@ public class Repository {
                 newBlobs.put(filename, oId);
             }
             if (!lId.equals(hId) && !lId.equals(oId)) {
+                System.out.println("Encountered a merge conflict.");
                 Blob conflictBlob = writeConflictBlob(filename);
                 File file = join(STAGING_DIR, conflictBlob.getId());
                 writeObject(file, conflictBlob);
@@ -535,6 +537,25 @@ public class Repository {
         for (String file : filesInCWD) {
             if (!currentBlobsSet.contains(file) && !stagedSet.contains(file)
                     && !removedSet.contains(file)) {
+                System.out.println(
+                        "There is an untracked file in the way;"
+                                + " delete it, or add and commit it first.");
+                System.exit(0);
+            }
+        }
+    }
+
+    private static void checkUntracked(Commit commit) {
+        Commit head = getHeadCommit();
+        Set<String> commitBlobsSet = commit.getBlobs().keySet();
+        Set<String> currentBlobsSet = head.getBlobs().keySet();
+        List<String> filesInCWD = plainFilenamesIn(CWD);
+        StagingArea stage = readObject(STAGE, StagingArea.class);
+        Set<String> stagedSet = stage.getAdded().keySet();
+        Set<String> removedSet = stage.getRemoved();
+        for (String file : filesInCWD) {
+            if (commitBlobsSet.contains(file) && !currentBlobsSet.contains(file)
+                    && !stagedSet.contains(file) && !removedSet.contains(file)) {
                 System.out.println(
                         "There is an untracked file in the way;"
                                 + " delete it, or add and commit it first.");
