@@ -1,9 +1,7 @@
 package gitlet;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static gitlet.Utils.*;
 
@@ -145,9 +143,9 @@ public class Repository {
         }
         Commit head = getHeadCommit();
         Map<String, String> originBlobs = head.getBlobs();
-        List<String> newParents = head.getParents();
         String headID = head.getID();
-        newParents.add(0, headID);
+        List<String> newParents = new LinkedList<>();
+        newParents.add(headID);
         StagingArea stage = readObject(STAGE, StagingArea.class);
         Map<String, String> stagedBlobs = stage.getAdded();
         Set<String> removedBlobs = stage.getRemoved();
@@ -222,8 +220,8 @@ public class Repository {
         while (!parents.isEmpty()) {
             File file = join(OBJECTS_DIR, parents.get(0));
             Commit commit = readObject(file, Commit.class);
+            parents = commit.getParents();
             printLog(commit);
-            parents.remove(0);
         }
     }
 
@@ -428,6 +426,7 @@ public class Repository {
 
     public static void merge(String branchName) {
         StagingArea stage = readObject(STAGE, StagingArea.class);
+        checkBranchUntracked(branchName);
         if (!stage.isEmpty()) {
             System.out.println("You have uncommitted changes.");
             System.exit(0);
@@ -441,6 +440,53 @@ public class Repository {
             System.out.println("Cannot merge a branch with itself.");
             System.exit(0);
         }
+        Commit currentHead = getHeadCommit();
+        Commit branchHead = getHeadCommit(branchName);
+        Commit lca = getLatestCommonAncestor(currentHead, branchHead);
+        if (lca.getID().equals(branchHead.getID())) {
+            System.out.println("Given branch is an ancestor of the current branch.");
+            System.exit(0);
+        }
+        if (lca.getID().equals(currentHead.getID())) {
+            checkoutBranch(branchName);
+            System.out.println("Current branch fast-forwarded.");
+        }
+        Set<String> allFilesSet = getAllFilenames(currentHead, branchHead, lca);
+        Map<String, String> newBlobs = new HashMap<>(currentHead.getBlobs());
+        for (String filename : allFilesSet) {
+            String lId = lca.getBlobs().getOrDefault(filename, "");
+            String hId = currentHead.getBlobs().getOrDefault(filename, "");
+            String oId = branchHead.getBlobs().getOrDefault(filename, "");
+
+            if (!lId.equals("") && !hId.equals("") && !oId.equals("")
+                    && lId.equals(hId) && !lId.equals(oId)) {
+                newBlobs.put(filename, oId);
+            }
+            if (!lId.equals("") && !hId.equals("") && oId.equals("") && lId.equals(hId)) {
+                newBlobs.remove(filename);
+            }
+            if (lId.equals("") && hId.equals("") && !oId.equals("")) {
+                newBlobs.put(filename, oId);
+            }
+            if (!lId.equals(hId) && !lId.equals(oId)) {
+                Blob conflictBlob = writeConflictBlob(filename);
+                newBlobs.put(filename, conflictBlob.getId());
+            }
+        }
+        List<String> parents = new LinkedList<>();
+        parents.add(0, branchHead.getID());
+        parents.add(0, currentHead.getID());
+        String mergeMessage = "Merged " + branchName
+                + " into " + readContentsAsString(HEAD) + ".";
+        Commit commit = new Commit(mergeMessage, parents, newBlobs);
+        File result = join(OBJECTS_DIR, commit.getID());
+        writeObject(result, commit);
+
+        File branchFile = join(HEADS_DIR, readContentsAsString(HEAD));
+        writeContents(branchFile, commit.getID());
+
+        stage = new StagingArea();
+        writeObject(STAGE, stage);
     }
 
     public static void checkInitialDir() {
@@ -468,6 +514,11 @@ public class Repository {
     private static void printLog(Commit commit) {
         System.out.println("===");
         System.out.println("commit " + commit.getID());
+        if (commit.getParents().size() == 2) {
+            System.out.println("Merge: "
+                    + commit.getParents().get(0).substring(0, 7) + " "
+                    + commit.getParents().get(1).substring(0, 7));
+        }
         System.out.println("Date: " + commit.getTimestamp());
         System.out.println(commit.getMessage());
         System.out.println();
@@ -571,5 +622,64 @@ public class Repository {
             return null;
         }
         return null;
+    }
+
+    private static Commit getLatestCommonAncestor(Commit head, Commit other) {
+        Set<String> headParentsSet = BFSHeadCommit(head);
+
+        Queue<Commit> queue = new LinkedList<>();
+        queue.add(other);
+        while (!queue.isEmpty()) {
+            Commit commit = queue.poll();
+            if (headParentsSet.contains(commit.getID())) {
+                return commit;
+            }
+            if (!commit.getParents().isEmpty()) {
+                for (String id : commit.getParents()) {
+                    File file = join(OBJECTS_DIR, id);
+                    Commit ancestorCommit = readObject(file, Commit.class);
+                    queue.add(ancestorCommit);
+                }
+            }
+        }
+        return new Commit();
+    }
+
+    private static Set<String> BFSHeadCommit(Commit head) {
+        Set<String> headParentsSet = new HashSet<>();
+        Queue<Commit> queue = new LinkedList<>();
+        queue.add(head);
+        while (!queue.isEmpty()) {
+            Commit commit = queue.poll();
+            if (!headParentsSet.contains(commit.getID())
+                    && !commit.getParents().isEmpty()) {
+                for (String id : commit.getParents()) {
+                    File file = join(OBJECTS_DIR, id);
+                    Commit ancestorCommit = readObject(file, Commit.class);
+                    queue.add(ancestorCommit);
+                }
+            }
+            headParentsSet.add(commit.getID());
+        }
+        return headParentsSet;
+    }
+
+    private static Set<String> getAllFilenames(Commit lca, Commit head, Commit other) {
+        Set<String> set = new HashSet<>();
+        set.addAll(lca.getBlobs().keySet());
+        set.addAll(head.getBlobs().keySet());
+        set.addAll(other.getBlobs().keySet());
+        return set;
+    }
+
+    private static Blob writeConflictBlob(String fileName) {
+        File file = join(CWD, fileName);
+        String conflictMessage = "<<<<<<< HEAD\n" +
+                "contents of file in current branch\n" +
+                "=======\n" +
+                "contents of file in given branch\n" +
+                ">>>>>>>";
+        writeContents(file, conflictMessage);
+        return new Blob(file);
     }
 }
