@@ -709,7 +709,7 @@ public class Repository {
                 + new String(headBlob.getContent(), StandardCharsets.UTF_8)
                 + "=======\n"
                 + new String(branchBlob.getContent(), StandardCharsets.UTF_8)
-                + ">>>>>>>";
+                + ">>>>>>>\n";
         writeContents(file, conflictMessage);
         return new Blob(file);
     }
