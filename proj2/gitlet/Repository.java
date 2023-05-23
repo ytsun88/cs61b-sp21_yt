@@ -463,14 +463,13 @@ public class Repository {
             if (!lId.equals("") && !hId.equals("") && !oId.equals("")
                     && lId.equals(hId) && !lId.equals(oId)) {
                 newBlobs.put(filename, oId);
-            }
-            if (!lId.equals("") && !hId.equals("") && oId.equals("") && lId.equals(hId)) {
+            } else if (!lId.equals("") && !hId.equals("")
+                    && oId.equals("") && lId.equals(hId)) {
                 newBlobs.remove(filename);
-            }
-            if (lId.equals("") && hId.equals("") && !oId.equals("")) {
+            } else if (lId.equals("") && hId.equals("") && !oId.equals("")) {
                 newBlobs.put(filename, oId);
-            }
-            if (!lId.equals("") && !lId.equals(hId) && !lId.equals(oId)) {
+            } else if (!lId.equals("") && (!hId.equals("") || !oId.equals(""))
+                    && !lId.equals(hId) && !lId.equals(oId)) {
                 System.out.println("Encountered a merge conflict.");
                 Blob conflictBlob = writeConflictBlob(filename, currentHead, branchHead);
                 File file = join(STAGING_DIR, conflictBlob.getId());
