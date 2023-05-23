@@ -470,9 +470,9 @@ public class Repository {
             if (lId.equals("") && hId.equals("") && !oId.equals("")) {
                 newBlobs.put(filename, oId);
             }
-            if (!lId.equals(hId) && !lId.equals(oId)) {
+            if (!lId.equals("") && !lId.equals(hId) && !lId.equals(oId)) {
                 System.out.println("Encountered a merge conflict.");
-                Blob conflictBlob = writeConflictBlob(filename, hId, oId);
+                Blob conflictBlob = writeConflictBlob(filename, currentHead, branchHead);
                 File file = join(STAGING_DIR, conflictBlob.getId());
                 writeObject(file, conflictBlob);
                 newBlobs.put(filename, conflictBlob.getId());
@@ -699,16 +699,28 @@ public class Repository {
         return set;
     }
 
-    private static Blob writeConflictBlob(String fileName, String hId, String oId) {
-        File headBlobFile = join(STAGING_DIR, hId);
-        Blob headBlob = readObject(headBlobFile, Blob.class);
-        File branchBlobFile = join(STAGING_DIR, oId);
-        Blob branchBlob = readObject(branchBlobFile, Blob.class);
+    private static Blob writeConflictBlob(String fileName, Commit currentHead, Commit branchHead) {
+        String headContent;
+        String branchContent;
+        if (currentHead.getBlobs().containsKey(fileName)) {
+            File headBlobFile = join(STAGING_DIR, currentHead.getBlobs().get(fileName));
+            Blob headBlob = readObject(headBlobFile, Blob.class);
+            headContent = new String(headBlob.getContent(), StandardCharsets.UTF_8);
+        } else {
+            headContent = "";
+        }
+        if (branchHead.getBlobs().containsKey(fileName)) {
+            File branchBlobFile = join(STAGING_DIR, branchHead.getBlobs().get(fileName));
+            Blob branchBlob = readObject(branchBlobFile, Blob.class);
+            branchContent = new String(branchBlob.getContent(), StandardCharsets.UTF_8);
+        } else {
+            branchContent = "";
+        }
         File file = join(CWD, fileName);
         String conflictMessage = "<<<<<<< HEAD\n"
-                + new String(headBlob.getContent(), StandardCharsets.UTF_8)
+                + headContent
                 + "=======\n"
-                + new String(branchBlob.getContent(), StandardCharsets.UTF_8)
+                + branchContent
                 + ">>>>>>>\n";
         writeContents(file, conflictMessage);
         return new Blob(file);
